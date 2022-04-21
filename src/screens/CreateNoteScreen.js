@@ -18,23 +18,36 @@ const postReducer = (state, action) => {
 
     case "change_description":
       return { ...state, description: action.payload };
-    default: 
-    return state
+    default:
+      return state;
   }
 };
 
-
 const CreateNoteScreen = ({ navigation }) => {
   const id = navigation.getParam("id");
-  const { state, addPost } = useContext(BlogContext);
+  const { state, addPost, editPost } = useContext(BlogContext);
   const date = new Date();
   const initPostState = id
-    ? state.find((currentPost) => (currentPost.id === id))
-    : { title: "", id: Math.floor(Math.random() * 9999), description: "", date: date };
+    ? state.find((currentPost) => currentPost.id === id)
+    : {
+        title: "",
+        id: Math.floor(Math.random() * 9999),
+        description: "",
+        date: date,
+      };
   const [post, dispatch] = useReducer(postReducer, initPostState);
-  addPostGlobal = () =>{
-    addPost(post);
-  } 
+  addPostGlobal = id
+    ? () => {
+        editPost(post, () => {
+          navigation.popToTop();
+        });
+      }
+    : () => {
+        addPost(post, () => {
+          navigation.popToTop();
+        });
+      };
+
   return (
     <View style={styles.containerStyle}>
       <TextInput
@@ -74,7 +87,7 @@ const styles = StyleSheet.create({
   },
 });
 
-CreateNoteScreen.navigationOptions = ({ navigation }) => {
+CreateNoteScreen.navigationOptions = () => {
   return {
     title: "Create Note",
     headerRight: () => (
@@ -82,7 +95,6 @@ CreateNoteScreen.navigationOptions = ({ navigation }) => {
         title="Done"
         onPress={() => {
           addPostGlobal();
-          navigation.popToTop();
         }}
       />
     ),

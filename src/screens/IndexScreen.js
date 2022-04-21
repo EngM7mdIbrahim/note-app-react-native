@@ -15,7 +15,7 @@ import {
 } from "../theme/blackTheme";
 
 const IndexScreen = ({ navigation }) => {
-  const { state, deletePost } = useContext(BlogContext);
+  const { state, deletePost, getBlogPosts } = useContext(BlogContext);
   const [searchTerm, setSearchTerm] = useState("");
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
@@ -32,10 +32,11 @@ const IndexScreen = ({ navigation }) => {
         setKeyboardVisible(false); // or some other action
       }
     );
-
+    const onFocusListener = navigation.addListener('didFocus', () => getBlogPosts());
     return () => {
       keyboardDidHideListener.remove();
       keyboardDidShowListener.remove();
+      onFocusListener.remove();
     };
   }, []);
 
@@ -81,7 +82,9 @@ const IndexScreen = ({ navigation }) => {
           />
         }
         onItemTouch={(id) => navigation.navigate("BlogDetail", { id: id })}
-        onDeleteTouch={(id) => deletePost(id)}
+        onDeleteTouch={(id) => deletePost(id, ()=>{
+          getBlogPosts();
+        })}
       />
       <Text>It works!</Text>
     </View>

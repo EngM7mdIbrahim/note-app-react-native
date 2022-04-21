@@ -25,7 +25,6 @@ const ListRendererItem = ({
   if (element.index === length - 1) {
     containerStyle = { ...containerStyle, ...styles.lastContainerStyle };
   }
-  console.log(element);
   return (
     <TouchableOpacity onPress={onTouch}>
       <View style={{ ...containerStyle, backgroundColor }}>
